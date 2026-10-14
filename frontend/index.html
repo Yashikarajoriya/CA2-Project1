@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CA2 Task Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <p class="eyebrow">STAY ORGANIZED</p>
+      <h1>My Task Manager</h1>
+      <p class="subtitle">Plan your work. Track your progress.</p>
+    </header>
+
+    <section class="stats">
+      <div class="stat-card">
+        <span>Total tasks</span>
+        <strong id="total-count">0</strong>
+      </div>
+      <div class="stat-card">
+        <span>Completed</span>
+        <strong id="completed-count">0</strong>
+      </div>
+      <div class="stat-card">
+        <span>Pending</span>
+        <strong id="pending-count">0</strong>
+      </div>
+    </section>
+
+    <form id="task-form" class="task-form">
+      <input id="task-title" type="text" placeholder="What needs to be done?" required>
+      <button type="submit">+ Add Task</button>
+    </form>
+
+    <section class="tasks-section">
+      <div class="section-heading">
+        <h2>Your tasks</h2>
+        <button id="refresh-btn" class="secondary-btn" type="button">Refresh</button>
+      </div>
+      <p id="message" role="status"></p>
+      <ul id="task-list"></ul>
+    </section>
+
+    <footer>Powered by Express REST API and MongoDB Atlas</footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
