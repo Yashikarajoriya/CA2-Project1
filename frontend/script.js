@@ -1,5 +1,5 @@
 
-const API_URL = "http://localhost:5000/api/tasks";
+const API_URL = "https://ca2-task-manager-backend.onrender.com/api/tasks";
 
 const form = document.getElementById("task-form");
 const titleInput = document.getElementById("task-title");
