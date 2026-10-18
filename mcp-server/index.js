@@ -1,26 +1,13 @@
 
 const express = require("express");
-const { randomUUID } = require("node:crypto");
 const { McpServer } = require("@modelcontextprotocol/sdk/server/mcp.js");
-const { StreamableHTTPServerTransport } = require("@modelcontextprotocol/sdk/server/streamableHttp.js");
+const {
+  StreamableHTTPServerTransport,
+} = require("@modelcontextprotocol/sdk/server/streamableHttp.js");
 const { z } = require("zod");
 
 const app = express();
 app.use(express.json());
-const MCP_AUTH_TOKEN = process.env.MCP_AUTH_TOKEN;
-
-
-  
-
-  const authHeader = req.headers.authorization;
-
-  if (authHeader !== `Bearer ${MCP_AUTH_TOKEN}`) {
-    return res.status(401).json({
-      error: "Unauthorized",
-    });
-  }
-
-  next();
 
 const API_URL =
   process.env.TASK_API_URL ||
@@ -31,6 +18,7 @@ const server = new McpServer({
   version: "1.0.0",
 });
 
+// Send requests to the Task Manager backend.
 async function apiRequest(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
@@ -56,6 +44,7 @@ async function apiRequest(path, options = {}) {
   return data;
 }
 
+// Tool 1: Get all tasks.
 server.registerTool(
   "get_tasks",
   {
@@ -65,12 +54,16 @@ server.registerTool(
   },
   async () => {
     const tasks = await apiRequest("/api/tasks");
+
     return {
-      content: [{ type: "text", text: JSON.stringify(tasks, null, 2) }],
+      content: [
+        { type: "text", text: JSON.stringify(tasks, null, 2) },
+      ],
     };
   }
 );
 
+// Tool 2: Add a task.
 server.registerTool(
   "add_task",
   {
@@ -87,16 +80,20 @@ server.registerTool(
     });
 
     return {
-      content: [{ type: "text", text: JSON.stringify(task, null, 2) }],
+      content: [
+        { type: "text", text: JSON.stringify(task, null, 2) },
+      ],
     };
   }
 );
 
+// Tool 3: Update a task.
 server.registerTool(
   "update_task",
   {
     title: "Update task",
-    description: "Update a task using its MongoDB ID. Supply its title and completion status.",
+    description:
+      "Update a task using its MongoDB ID. Supply its title and completion status.",
     inputSchema: {
       id: z.string().min(1),
       title: z.string().trim().min(1).max(200),
@@ -113,16 +110,20 @@ server.registerTool(
     );
 
     return {
-      content: [{ type: "text", text: JSON.stringify(task, null, 2) }],
+      content: [
+        { type: "text", text: JSON.stringify(task, null, 2) },
+      ],
     };
   }
 );
 
+// Tool 4: Delete a task.
 server.registerTool(
   "delete_task",
   {
     title: "Delete task",
-    description: "Permanently delete a task using its MongoDB ID. Ask the user for confirmation before deleting.",
+    description:
+      "Permanently delete a task using its MongoDB ID. Ask the user for confirmation before deleting.",
     inputSchema: {
       id: z.string().min(1),
     },
@@ -134,15 +135,22 @@ server.registerTool(
     );
 
     return {
-      content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      content: [
+        { type: "text", text: JSON.stringify(result, null, 2) },
+      ],
     };
   }
 );
 
+// Health check.
 app.get("/health", (req, res) => {
-  res.json({ status: "ok", service: "task-manager-mcp" });
+  res.json({
+    status: "ok",
+    service: "task-manager-mcp",
+  });
 });
 
+// MCP endpoint. Authentication is disabled for this demo.
 app.post("/mcp", async (req, res) => {
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
@@ -157,6 +165,7 @@ app.post("/mcp", async (req, res) => {
     await transport.handleRequest(req, res, req.body);
   } catch (error) {
     console.error("MCP request failed:", error);
+
     if (!res.headersSent) {
       res.status(500).json({ error: "MCP request failed" });
     }
@@ -164,6 +173,7 @@ app.post("/mcp", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
+
 app.listen(PORT, () => {
   console.log(`Task Manager MCP server listening on port ${PORT}`);
 });
