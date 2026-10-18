@@ -9,12 +9,8 @@ const app = express();
 app.use(express.json());
 const MCP_AUTH_TOKEN = process.env.MCP_AUTH_TOKEN;
 
-app.use("/mcp", (req, res, next) => {
-  if (!MCP_AUTH_TOKEN) {
-    return res.status(503).json({
-      error: "MCP authentication is not configured",
-    });
-  }
+
+  
 
   const authHeader = req.headers.authorization;
 
@@ -25,7 +21,6 @@ app.use("/mcp", (req, res, next) => {
   }
 
   next();
-});
 
 const API_URL =
   process.env.TASK_API_URL ||
