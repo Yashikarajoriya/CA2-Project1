@@ -18,6 +18,47 @@ const server = new McpServer({
   version: "1.0.0",
 });
 
+
+const GITHUB_OWNER = "Yashikarajoriya";
+const GITHUB_REPO = "CA2-Project1";
+const GITHUB_BRANCH = "main";
+
+const ALLOWED_FRONTEND_FILES = [
+  "frontend/index.html",
+  "frontend/style.css",
+  "frontend/script.js",
+];
+
+async function githubRequest(path) {
+  const token = process.env.GITHUB_TOKEN;
+
+  if (!token) {
+    throw new Error("GITHUB_TOKEN is not configured on the server.");
+  }
+
+  const response = await fetch(
+    `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${encodeURIComponent(GITHUB_BRANCH)}`,
+    {
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${token}`,
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      `GitHub request failed with status ${response.status}.`
+    );
+  }
+
+  return data;
+}
+
+
 // Send requests to the Task Manager backend.
 async function apiRequest(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, {
@@ -137,6 +178,68 @@ server.registerTool(
     return {
       content: [
         { type: "text", text: JSON.stringify(result, null, 2) },
+      ],
+    };
+  }
+);
+
+
+server.registerTool(
+  "list_frontend_files",
+  {
+    title: "List frontend files",
+    description:
+      "List the approved frontend files that can be inspected or edited.",
+    inputSchema: {},
+  },
+  async () => {
+    return {
+      content: [
+        {
+          type: "text",
+          text: ALLOWED_FRONTEND_FILES.join("\n"),
+        },
+      ],
+    };
+  }
+);
+
+server.registerTool(
+  "get_frontend_file",
+  {
+    title: "Read frontend file",
+    description:
+      "Read one approved frontend file from the main GitHub branch. This tool does not change files.",
+    inputSchema: {
+      path: z.enum([
+        "frontend/index.html",
+        "frontend/style.css",
+        "frontend/script.js",
+      ]),
+    },
+  },
+  async ({ path }) => {
+    if (!ALLOWED_FRONTEND_FILES.includes(path)) {
+      throw new Error("This file is not allowed.");
+    }
+
+    const file = await githubRequest(path);
+
+    if (Array.isArray(file) || !file.content || !file.encoding) {
+      throw new Error("GitHub did not return a readable file.");
+    }
+
+    const content = Buffer.from(
+      file.content,
+      file.encoding
+    ).toString("utf8");
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: `File: ${path}\n\n${content}`,
+        },
       ],
     };
   }
