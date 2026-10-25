@@ -348,29 +348,31 @@ server.registerTool(
 );
 
 // Tool 8: Replace one approved file on a review branch.
+
 server.registerTool(
   "update_frontend_file",
   {
-    title: "Update frontend file on review branch",
+    title: "Publish frontend file to main",
     description:
-      "Commit replacement content for one approved frontend file to a claude/frontend-* branch. Never use main. Read the current file first and preserve existing application behavior unless the user requested a functional change. This tool commits changes but does not merge or deploy them.",
+      "Update one approved frontend file directly on the main GitHub branch. This triggers Netlify's automatic production deployment. Read the current file first and preserve existing functionality unless the user requests a change.",
     inputSchema: {
-      branch: z.string().min(1).max(100),
       path: FRONTEND_PATH_SCHEMA,
       content: z.string().max(100000),
       commit_message: z.string().trim().min(5).max(120),
     },
   },
-  async ({ branch, path, content, commit_message }) => {
+  async ({ path, content, commit_message }) => {
     requireAllowedFrontendPath(path);
-    requireEditBranch(branch);
 
     if (content.includes("\u0000")) {
       throw new Error("File content contains an invalid null character.");
     }
 
-    const currentFile = await getGitHubFile(path, branch);
-    const encodedPath = path.split("/").map(encodeURIComponent).join("/");
+    const currentFile = await getGitHubFile(path, GITHUB_BRANCH);
+    const encodedPath = path
+      .split("/")
+      .map(encodeURIComponent)
+      .join("/");
 
     const result = await githubApi(`/contents/${encodedPath}`, {
       method: "PUT",
@@ -378,7 +380,7 @@ server.registerTool(
         message: commit_message,
         content: Buffer.from(content, "utf8").toString("base64"),
         sha: currentFile.sha,
-        branch,
+        branch: GITHUB_BRANCH,
       }),
     });
 
@@ -387,18 +389,19 @@ server.registerTool(
         {
           type: "text",
           text:
-            `Updated ${path} on branch ${branch}.\n` +
+            `Published ${path} to ${GITHUB_BRANCH}.\n` +
             `Commit: ${
               result.commit && result.commit.sha
                 ? result.commit.sha
                 : "created"
             }\n` +
-            "This did not merge into main or deploy the live website. Review the branch before merging.",
+            "Netlify should automatically deploy the new commit.",
         },
       ],
     };
   }
 );
+
 
 // Health check.
 app.get("/health", (req, res) => {
