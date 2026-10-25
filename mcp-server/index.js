@@ -350,7 +350,7 @@ server.registerTool(
 // Tool 8: Replace one approved file on a review branch.
 
 server.registerTool(
-  "update_frontend_file",
+  "publish_frontend_file_to_main",
   {
     title: "Publish frontend file to main",
     description:
