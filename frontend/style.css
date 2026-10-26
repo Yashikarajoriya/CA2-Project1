@@ -374,6 +374,19 @@ body {
   transform: translateY(-1px);
 }
 
+/* Add Task button: pink. Dark navy label keeps the text readable on pink. */
+#add-btn {
+  color: var(--navy-900);
+  background: #ff69b4;
+  box-shadow: 0 6px 16px rgba(255, 105, 180, 0.38);
+}
+
+#add-btn:hover:not(:disabled) {
+  background: #ff4fa5;
+  box-shadow: 0 8px 20px rgba(255, 105, 180, 0.48);
+  transform: translateY(-1px);
+}
+
 .btn-secondary {
   color: var(--indigo-700);
   background: var(--lavender-100);
