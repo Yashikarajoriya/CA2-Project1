@@ -529,10 +529,39 @@ body {
   border-color: var(--indigo-500);
 }
 
+.task-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  min-width: 0;
+}
+
 .task-title {
   font-weight: 500;
   overflow-wrap: anywhere;
   color: var(--text);
+}
+
+/* Green status badge shown on completed tasks */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  padding: 3px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #065f46;
+  background: var(--success-bg);
+  border: 1px solid #6ee7b7;
+  border-radius: 999px;
+}
+
+.status-badge svg {
+  width: 12px;
+  height: 12px;
 }
 
 .task-item.completed {
