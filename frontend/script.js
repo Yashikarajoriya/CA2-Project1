@@ -255,25 +255,9 @@ function buildTaskItem(task) {
     return item;
   }
 
-  const body = document.createElement("div");
-  body.className = "task-body";
-
   const title = document.createElement("span");
   title.className = "task-title";
   title.textContent = task.title;
-  body.appendChild(title);
-
-  if (task.completed) {
-    const badge = document.createElement("span");
-    badge.className = "status-badge";
-
-    const badgeIcon = document.createElement("span");
-    badgeIcon.setAttribute("aria-hidden", "true");
-    badgeIcon.innerHTML = ICONS.save;
-
-    badge.append(badgeIcon, document.createTextNode("Completed"));
-    body.appendChild(badge);
-  }
 
   const editButton = createButton("Edit", "btn-secondary", "edit", `Edit ${task.title}`, () =>
     startEditing(task)
@@ -285,7 +269,7 @@ function buildTaskItem(task) {
   );
 
   actions.append(editButton, deleteButton);
-  item.append(checkbox, body, actions);
+  item.append(checkbox, title, actions);
   return item;
 }
 
