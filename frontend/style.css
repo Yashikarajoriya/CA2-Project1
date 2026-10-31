@@ -15,7 +15,7 @@
   --lavender-200: #ddd6fe;
   --lavender-300: #c4b5fd;
 
-  --bg: #ece7fb;
+  --bg: #f4f5fb;
   --surface: #ffffff;
   --border: #e4e6f2;
   --text: #141a3c;
@@ -374,19 +374,6 @@ body {
   transform: translateY(-1px);
 }
 
-/* Add Task button: pink. Dark navy label keeps the text readable on pink. */
-#add-btn {
-  color: var(--navy-900);
-  background: #ff69b4;
-  box-shadow: 0 6px 16px rgba(255, 105, 180, 0.38);
-}
-
-#add-btn:hover:not(:disabled) {
-  background: #ff4fa5;
-  box-shadow: 0 8px 20px rgba(255, 105, 180, 0.48);
-  transform: translateY(-1px);
-}
-
 .btn-secondary {
   color: var(--indigo-700);
   background: var(--lavender-100);
@@ -529,39 +516,10 @@ body {
   border-color: var(--indigo-500);
 }
 
-.task-body {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 10px;
-  min-width: 0;
-}
-
 .task-title {
   font-weight: 500;
   overflow-wrap: anywhere;
   color: var(--text);
-}
-
-/* Green status badge shown on completed tasks */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  flex: none;
-  padding: 3px 10px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  line-height: 1.4;
-  color: #065f46;
-  background: var(--success-bg);
-  border: 1px solid #6ee7b7;
-  border-radius: 999px;
-}
-
-.status-badge svg {
-  width: 12px;
-  height: 12px;
 }
 
 .task-item.completed {
